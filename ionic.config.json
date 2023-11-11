@@ -1,0 +1,7 @@
+{
+  "name": "KanaMinds-Pro",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
