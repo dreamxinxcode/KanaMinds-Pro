@@ -1,24 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { SettingsService } from './services/settings/settings.service';
+import { Platform } from '@ionic/angular';
+import { DBService } from './services/db/db.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
-  constructor(private settingsService: SettingsService) {}
+export class AppComponent {
+  public isWeb: boolean = false;
+  private initPlugin!: boolean; // Add the ! here
 
-  ngOnInit(): void {
-    // Check if the app has been installed before
-    const isAppInstalled = localStorage.getItem('isAppInstalled');
+  constructor(
+    private settingsService: SettingsService,
+    private platform: Platform,
+    private db: DBService,
+    private ngZone: NgZone
+  ) {
+    this.initializeApp();
+  }
 
-    if (!isAppInstalled) {
-      // Set the dark theme for the first time
-      this.settingsService.toggleDarkMode();
+  initializeApp() {
+    this.platform.ready().then(async () => {
+      this.db.initializePlugin().then(async (ret) => {
+        this.initPlugin = ret;
+        if( this.db.platform === "web") {
+          this.isWeb = true;
+          await customElements.whenDefined('jeep-sqlite');
+          const jeepSqliteEl = document.querySelector('jeep-sqlite');
+          if(jeepSqliteEl != null) {
+            await this.db.initWebStore();
+            console.log(`>>>> isStoreOpen ${await jeepSqliteEl.isStoreOpen()}`);
+          } else {
+            console.log('>>>> jeepSqliteEl is null');
+          }
+        }
 
-      // Mark the app as installed to avoid setting the theme on every app open
-      localStorage.setItem('isAppInstalled', 'true');
-    }
+        console.log(`>>>> in App  this.initPlugin ${this.initPlugin}`);
+      });
+    });
   }
 }
