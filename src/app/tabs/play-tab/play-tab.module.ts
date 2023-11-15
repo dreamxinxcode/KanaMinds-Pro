@@ -2,17 +2,17 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tab2Page } from './tab2.page';
+import { PlayTabPage } from './play-tab.page';
 
-import { Tab2PageRoutingModule } from './tab2-routing.module';
+import { PlayTabPageRoutingModule } from './play-tab-routing.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    Tab2PageRoutingModule
+    PlayTabPageRoutingModule
   ],
-  declarations: [Tab2Page]
+  declarations: [PlayTabPage]
 })
-export class Tab2PageModule {}
+export class PlayTabPageModule {}

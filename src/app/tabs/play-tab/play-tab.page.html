@@ -1,0 +1,12 @@
+<ion-content [fullscreen]="true">
+  <div id="game-area">
+    {{ percentCorrect + '%' }}
+    {{ fractionCorrect }}
+    <p id="current-kana">{{ kanaList[currentKanaIndex].japanese }}</p>
+    <div id="choices-area">
+      <div *ngFor='let item of choiceItems' (click)="handleAnswer(item)" class="choice-button">
+          {{ item.english }}
+      </div>
+    </div>
+  </div>
+</ion-content>
