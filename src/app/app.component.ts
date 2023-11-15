@@ -23,6 +23,7 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(async () => {
+      this.settingsService.setTheme();
       this.db.initializePlugin().then(async (ret) => {
         this.initPlugin = ret;
         if( this.db.platform === "web") {
