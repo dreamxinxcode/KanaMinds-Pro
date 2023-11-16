@@ -32,3 +32,19 @@
         }
     }
 }
+
+#gems-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: .5rem;
+
+    #gem-image {
+        height: 1.4rem;
+        margin-right: .5rem;
+    }
+
+    span {
+        font-size: 1.2rem;
+    }
+}

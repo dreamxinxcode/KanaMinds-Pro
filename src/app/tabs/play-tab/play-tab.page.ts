@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GemsService } from 'src/app/services/gems/gems.service';
 
 @Component({
   selector: 'app-game-tab',
@@ -30,7 +31,7 @@ export class PlayTabPage {
     { japanese: 'お', english: 'O' },
   ];  
 
-  constructor() {}
+  constructor(public gems: GemsService) {}
 
   handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
@@ -48,6 +49,7 @@ export class PlayTabPage {
     this.updateScore();
     if (this.currentKanaIndex === this.kanaList.length - 1) {
       this.gameComplete = true;
+      this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
       return;
     }
     this.currentKanaIndex++;
