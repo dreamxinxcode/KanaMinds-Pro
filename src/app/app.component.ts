@@ -2,6 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { SettingsService } from './services/settings/settings.service';
 import { Platform } from '@ionic/angular';
 import { DBService } from './services/db/db.service';
+import { GemsService } from './services/gems/gems.service';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,6 @@ export class AppComponent {
     private settingsService: SettingsService,
     private platform: Platform,
     private db: DBService,
-    private ngZone: NgZone
   ) {
     this.initializeApp();
   }
