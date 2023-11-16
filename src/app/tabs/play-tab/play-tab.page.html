@@ -1,8 +1,15 @@
 <ion-content [fullscreen]="true">
-  <div id="game-area">
-    {{ percentCorrect + '%' }}
-    {{ fractionCorrect }}
-    <p id="current-kana">{{ kanaList[currentKanaIndex].japanese }}</p>
+  <div *ngIf="gameComplete" id="game-area">
+    <div *ngIf="gameComplete" id="results">
+      <p>{{ percentCorrect + '%' }}</p>
+      <p>{{ fractionCorrect }}</p>
+      <p *ngFor="let answer of incorrectAnswers">{{ answer.japanese }} = {{ answer.english }}</p>
+      <ion-button (click)="playAgain()">Play Again</ion-button>
+    </div>
+  </div>
+
+  <div *ngIf="!gameComplete" id="game-area">
+    <span id="current-kana">{{ kanaList[currentKanaIndex].japanese }}</span>
     <div id="choices-area">
       <div *ngFor='let item of choiceItems' (click)="handleAnswer(item)" class="choice-button">
           {{ item.english }}
