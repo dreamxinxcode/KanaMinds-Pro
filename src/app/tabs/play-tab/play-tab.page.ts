@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { GemsService } from 'src/app/services/gems/gems.service';
+import { OptionsModalComponent } from './options-modal/options-modal.component';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-game-tab',
@@ -31,7 +33,10 @@ export class PlayTabPage {
     { japanese: 'お', english: 'O' },
   ];  
 
-  constructor(public gems: GemsService) {}
+  constructor(
+    public gems: GemsService, 
+    private modalCtrl: ModalController,
+  ) {}
 
   handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
@@ -80,5 +85,18 @@ export class PlayTabPage {
     this.percentCorrect = 0;
     this.fractionCorrect = '';
     this.gameComplete = false;
+  }
+
+  async openOptionsModal() {
+    const modal = await this.modalCtrl.create({
+      component: OptionsModalComponent,
+    });
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+
+    if (role === 'confirm') {
+      
+    }
   }
 }
