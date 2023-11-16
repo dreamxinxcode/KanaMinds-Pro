@@ -1,4 +1,9 @@
 <ion-content [fullscreen]="true">
+  <div id="gems-area">
+    <img id='gem-image' src="../../../assets/gem.png" alt="">
+    <span>{{ gems.getGems() }}</span>
+  </div>  
+
   <div *ngIf="gameComplete" id="game-area">
     <div *ngIf="gameComplete" id="results">
       <p>{{ percentCorrect + '%' }}</p>
