@@ -9,6 +9,7 @@ export class PlayTabPage {
 
   currentKanaIndex: number = 0;
   answers: any[] = [];
+  incorrectAnswers: any[] = [];
   gameComplete: boolean = false;
   percentCorrect: number = 0;
   fractionCorrect: string = '';
@@ -36,6 +37,7 @@ export class PlayTabPage {
     if (isCorrect) {
       console.log('Correct!', this.kanaList[this.currentKanaIndex].japanese, '=', attempt.english)
     } else {
+      this.incorrectAnswers.push(this.kanaList[this.currentKanaIndex]);
       console.log('Incorrect!', this.kanaList[this.currentKanaIndex].japanese, '=', this.kanaList[this.currentKanaIndex].english)
     }
     this.answers.push({
@@ -44,6 +46,10 @@ export class PlayTabPage {
       isCorrect
     });
     this.updateScore();
+    if (this.currentKanaIndex === this.kanaList.length - 1) {
+      this.gameComplete = true;
+      return;
+    }
     this.currentKanaIndex++;
     this.shuffleChoices();
   }
@@ -57,11 +63,20 @@ export class PlayTabPage {
   }
 
   updateScore() {
-    // Percentage
+    // Percentage score
     const correctObjectsCount = this.answers.filter(obj => obj.isCorrect).length;
     const totalObjects = this.answers.length;
     this.percentCorrect = Math.round((correctObjectsCount / totalObjects) * 100);
-    // Fraction
+    // Fraction score
     this.fractionCorrect = `${correctObjectsCount}/${totalObjects}`;
+  }
+
+  playAgain() {
+    this.currentKanaIndex = 0;
+    this.answers = [];
+    this.incorrectAnswers = [];
+    this.percentCorrect = 0;
+    this.fractionCorrect = '';
+    this.gameComplete = false;
   }
 }
