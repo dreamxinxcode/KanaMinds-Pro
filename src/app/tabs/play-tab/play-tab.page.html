@@ -1,3 +1,14 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title class="kanaminds-title">
+      KanaMinds <span class="pro">Pro</span>
+    </ion-title>
+    <ion-buttons class='header-buttons' slot="end">
+      <ion-icon (click)="openOptionsModal()" name="options"></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content [fullscreen]="true">
   <div id="gems-area">
     <img id='gem-image' src="../../../assets/gem.png" alt="">
