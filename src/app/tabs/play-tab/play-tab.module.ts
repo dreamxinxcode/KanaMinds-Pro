@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { PlayTabPage } from './play-tab.page';
 
 import { PlayTabPageRoutingModule } from './play-tab-routing.module';
+import { OptionsModalComponent } from './options-modal/options-modal.component';
 
 @NgModule({
   imports: [
@@ -13,6 +14,6 @@ import { PlayTabPageRoutingModule } from './play-tab-routing.module';
     FormsModule,
     PlayTabPageRoutingModule
   ],
-  declarations: [PlayTabPage]
+  declarations: [PlayTabPage, OptionsModalComponent]
 })
 export class PlayTabPageModule {}
