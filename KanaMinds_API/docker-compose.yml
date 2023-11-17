@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+    api:
+        tty: true
+        stdin_open: true
+        container_name: kanaminds_api
+        build: ./
+        volumes:
+            - .:/code
+            - media_volume:/code/media
+        ports:
+            - 8000:8000
+        depends_on:
+            - db
+        env_file:
+            - .env
+
+    db:
+        image: postgres
+        container_name: kanaminds_db
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        volumes:
+            - kanaminds_postgres_data:/var/lib/postgresql/data/
+        env_file:
+            - .env
+
+volumes:
+  kanaminds_postgres_data:
+  media_volume:
