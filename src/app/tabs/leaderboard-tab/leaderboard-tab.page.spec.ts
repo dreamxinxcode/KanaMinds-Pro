@@ -2,19 +2,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 
-import { LearnTabPage } from './learn-tab.page';
+import { LeaderboardTabPage } from './leaderboard-tab.page';
 
-describe('LearnTabPage', () => {
-  let component: LearnTabPage;
-  let fixture: ComponentFixture<LearnTabPage>;
+describe('LeaderboardTabPage', () => {
+  let component: LeaderboardTabPage;
+  let fixture: ComponentFixture<LeaderboardTabPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LearnTabPage],
+      declarations: [LeaderboardTabPage],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LearnTabPage);
+    fixture = TestBed.createComponent(LeaderboardTabPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
