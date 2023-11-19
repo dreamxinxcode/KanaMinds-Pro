@@ -2,17 +2,17 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LearnTabPage } from './learn-tab.page';
+import { LeaderboardTabPage } from './leaderboard-tab.page';
 
-import { LearnTabPageRoutingModule } from './learn-tab-routing.module';
+import { LeaderboardTabPageRoutingModule } from './leaderboard-tab-routing.module';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    LearnTabPageRoutingModule
+    LeaderboardTabPageRoutingModule
   ],
-  declarations: [LearnTabPage]
+  declarations: [LeaderboardTabPage]
 })
-export class LearnTabPageModule {}
+export class LeaderboardTabPageModule {}

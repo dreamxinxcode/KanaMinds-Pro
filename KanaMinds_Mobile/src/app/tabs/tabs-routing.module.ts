@@ -12,8 +12,8 @@ const routes: Routes = [
         loadChildren: () => import('./play-tab/play-tab.module').then(m => m.PlayTabPageModule)
       },
       {
-        path: 'LearnTab',
-        loadChildren: () => import('./learn-tab/learn-tab.module').then(m => m.LearnTabPageModule)
+        path: 'LeaderboardTab',
+        loadChildren: () => import('./leaderboard-tab/leaderboard-tab.module').then(m => m.LeaderboardTabPageModule)
       },
       {
         path: 'tab3',
