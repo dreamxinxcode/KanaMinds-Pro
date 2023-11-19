@@ -2,3 +2,4 @@ KanaMinds_Mobile/build/*
 !KanaMinds_Mobile/build/.npmkeep
 
 KanaMinds_API/.env
+KanaMinds_API/media
