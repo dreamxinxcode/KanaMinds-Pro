@@ -1,28 +1,23 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 2
+    <ion-title class="start2p">
+      Leaderboard
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-title class="start2p">Leaderboard</ion-title>
-  
   <ion-list>
     <ion-item *ngFor="let user of leaderboard" class="start2p">
-      {{ user.profile.country_code }} {{ user.username }}  
+      <div>
+        <span class="fi fi-{{user?.profile.country_code | lowercase}}"></span>
+        {{ user.username }}
+      </div>
+
       <div class='leaderboard-gems' slot="end">
         <img src="../../../assets/gem.png" alt="">
         {{ user.profile.gems }}
       </div>
     </ion-item>
   </ion-list>
-
 </ion-content>
