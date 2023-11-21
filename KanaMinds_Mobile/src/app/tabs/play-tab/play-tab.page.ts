@@ -16,6 +16,7 @@ export class PlayTabPage {
   percentCorrect: number = 0;
   fractionCorrect: string = '';
 
+  isCorrectAnswer: boolean = false;
   isIncorrectAnswer: boolean = false;
   
   kanaList = [
@@ -41,28 +42,34 @@ export class PlayTabPage {
 
   handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
+  
     if (isCorrect) {
-
+      this.isCorrectAnswer = true;
+      this.answers.push({
+        attempt,
+        answer: this.kanaList[this.currentKanaIndex],
+        isCorrect
+      });
+      this.updateScore();
+      this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
+  
     } else {
       this.isIncorrectAnswer = true;
       this.incorrectAnswers.push(this.kanaList[this.currentKanaIndex]);
       setTimeout(() => {
         this.isIncorrectAnswer = false;
-      }, 1000);
+      }, 500);
     }
-    this.answers.push({
-      attempt,
-      answer: this.kanaList[this.currentKanaIndex],
-      isCorrect
-    });
-    this.updateScore();
-    if (this.currentKanaIndex === this.kanaList.length - 1) {
-      this.gameComplete = true;
-      this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
-      return;
-    }
-    this.currentKanaIndex++;
-    this.shuffleChoices();
+  
+    setTimeout(() => {
+      this.isCorrectAnswer = false;
+      if (this.currentKanaIndex === this.kanaList.length - 1) {
+        this.gameComplete = true;
+        return;
+      }
+      this.currentKanaIndex++;
+      this.shuffleChoices();
+    }, 500);
   }
 
   shuffleChoices() {

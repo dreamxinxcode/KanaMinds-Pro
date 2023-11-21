@@ -16,6 +16,10 @@
         font-size: 8rem;
     }
 
+    #current-kana.correct-answer {
+        color: #54b689;
+    }
+
     #current-kana.incorrect-answer {
         color: #f45450;
         animation: shake 0.5s;
@@ -68,4 +72,10 @@
     span {
         font-size: 1.2rem;
     }
+}
+
+#results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
