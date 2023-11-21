@@ -9,7 +9,6 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['play-tab.page.scss']
 })
 export class PlayTabPage {
-
   currentKanaIndex: number = 0;
   answers: any[] = [];
   incorrectAnswers: any[] = [];
@@ -17,6 +16,9 @@ export class PlayTabPage {
   percentCorrect: number = 0;
   fractionCorrect: string = '';
 
+  isCorrectAnswer: boolean = false;
+  isIncorrectAnswer: boolean = false;
+  
   kanaList = [
     { japanese: 'あ', english: 'A' },
     { japanese: 'い', english: 'I' },
@@ -40,25 +42,34 @@ export class PlayTabPage {
 
   handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
+  
     if (isCorrect) {
-      console.log('Correct!', this.kanaList[this.currentKanaIndex].japanese, '=', attempt.english)
-    } else {
-      this.incorrectAnswers.push(this.kanaList[this.currentKanaIndex]);
-      console.log('Incorrect!', this.kanaList[this.currentKanaIndex].japanese, '=', this.kanaList[this.currentKanaIndex].english)
-    }
-    this.answers.push({
-      attempt,
-      answer: this.kanaList[this.currentKanaIndex],
-      isCorrect
-    });
-    this.updateScore();
-    if (this.currentKanaIndex === this.kanaList.length - 1) {
-      this.gameComplete = true;
+      this.isCorrectAnswer = true;
+      this.answers.push({
+        attempt,
+        answer: this.kanaList[this.currentKanaIndex],
+        isCorrect
+      });
+      this.updateScore();
       this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
-      return;
+  
+    } else {
+      this.isIncorrectAnswer = true;
+      this.incorrectAnswers.push(this.kanaList[this.currentKanaIndex]);
+      setTimeout(() => {
+        this.isIncorrectAnswer = false;
+      }, 500);
     }
-    this.currentKanaIndex++;
-    this.shuffleChoices();
+  
+    setTimeout(() => {
+      this.isCorrectAnswer = false;
+      if (this.currentKanaIndex === this.kanaList.length - 1) {
+        this.gameComplete = true;
+        return;
+      }
+      this.currentKanaIndex++;
+      this.shuffleChoices();
+    }, 500);
   }
 
   shuffleChoices() {
