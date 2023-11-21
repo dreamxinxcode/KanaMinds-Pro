@@ -1,0 +1,35 @@
+:root {
+    --background: #111821;
+    --foreground: #111821;
+    --green: #54b689;
+  }
+
+body {
+    background-color: var(--background);
+}
+
+nav {
+    background-color: var(--foreground);
+}
+
+#logo {
+    font-size: 2rem;
+}
+
+nav span {
+    color: var(--green);
+}
+
+#header {
+    position: relative;
+}
+
+#header-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.page-footer {
+    background-color: var(--background);
+}

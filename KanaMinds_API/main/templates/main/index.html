@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KanaMinds</title>
+    {% load static %}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.png' %}">
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a id='logo' href="/">
+        KanaMinds <span>Pro</span>
+      </a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li>
+          <a href="https://instagram.com/kanaminds" target="_blank">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+        </li>
+        <li>
+          <a href="https://x.com/kanaminds" target="_blank">
+            <i class="fa-brands fa-twitter"></i>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.facebook.com/profile.php?id=100095315119324" target="_blank">
+            <i class="fa-brands fa-facebook"></i>
+          </a>
+        </li>
+        <li>
+          <a href="https://linkedin.com/company/kanaminds" target="_blank">
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+        </li>
+        <li>
+          <a href="https://discord.gg/pEWzWPss" target="_blank"">
+            <i class="fa-brands fa-discord"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="header">
+    <img src="{% static 'mockup.png' %}" id='header-img' alt="">
+  </div>
+  
+  <footer class="page-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+          <a href="/">
+            <img src="{% static 'logo.png' %}" id='logo' alt="">
+          </a>
+          <p class="grey-text text-lighten-4">Track your workouts, smash your goals!</p>
+        </div>
+        <div class="col l4 offset-l2 s12">
+          <h5 class="white-text">Social</h5>
+          <ul>
+            <li>
+              <a href="https://instagram.com/ionicfitness.app" target="_blank" class="grey-text text-lighten-3">
+                Instagram
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://twitter.com/ionicfitnessapp" target="_blank" class="grey-text text-lighten-3">
+                Twitter
+                <i class="fa-brands fa-twitter"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.facebook.com/profile.php?id=100095315119324" target="_blank" class="grey-text text-lighten-3">
+                Facebook
+                <i class="fa-brands fa-facebook"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://linkedin.com/company/ionic-fitness" target="_blank" class="grey-text text-lighten-3">
+                LinkedIn
+                <i class="fa-brands fa-linkedin"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://discord.gg/pEWzWPss" target="_blank" class="grey-text text-lighten-3">
+                Discord
+                <i class="fa-brands fa-discord"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      © <span id="currentYear"></span> KanaMinds
+      </div>
+    </div>
+  </footer>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const currentYearSpan = document.getElementById('currentYear');
+    const currentYear = new Date().getFullYear();
+    currentYearSpan.textContent = currentYear;
+  });
+</script>
+</html>
