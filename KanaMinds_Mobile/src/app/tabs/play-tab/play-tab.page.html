@@ -20,16 +20,16 @@
       <p>{{ percentCorrect + '%' }}</p>
       <p>{{ fractionCorrect }}</p>
       <p *ngFor="let answer of incorrectAnswers">{{ answer.japanese }} = {{ answer.english }}</p>
-      <ion-button (click)="playAgain()">Play Again</ion-button>
+      <ion-button (click)="playAgain()" class="button-green">Play Again</ion-button>
     </div>
   </div>
 
   <div *ngIf="!gameComplete" id="game-area">
-    <span id="current-kana">{{ kanaList[currentKanaIndex].japanese }}</span>
+    <span id="current-kana" [ngClass]="{'incorrect-answer': isIncorrectAnswer}">{{ kanaList[currentKanaIndex].japanese }}</span>
     <div id="choices-area">
       <div *ngFor='let item of choiceItems' (click)="handleAnswer(item)" class="choice-button">
-          {{ item.english }}
+        {{ item.english }}
       </div>
     </div>
-  </div>
+  </div>  
 </ion-content>

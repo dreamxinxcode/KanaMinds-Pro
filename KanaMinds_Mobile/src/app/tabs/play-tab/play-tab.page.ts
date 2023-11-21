@@ -9,7 +9,6 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['play-tab.page.scss']
 })
 export class PlayTabPage {
-
   currentKanaIndex: number = 0;
   answers: any[] = [];
   incorrectAnswers: any[] = [];
@@ -17,6 +16,8 @@ export class PlayTabPage {
   percentCorrect: number = 0;
   fractionCorrect: string = '';
 
+  isIncorrectAnswer: boolean = false;
+  
   kanaList = [
     { japanese: 'あ', english: 'A' },
     { japanese: 'い', english: 'I' },
@@ -41,10 +42,13 @@ export class PlayTabPage {
   handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
     if (isCorrect) {
-      console.log('Correct!', this.kanaList[this.currentKanaIndex].japanese, '=', attempt.english)
+
     } else {
+      this.isIncorrectAnswer = true;
       this.incorrectAnswers.push(this.kanaList[this.currentKanaIndex]);
-      console.log('Incorrect!', this.kanaList[this.currentKanaIndex].japanese, '=', this.kanaList[this.currentKanaIndex].english)
+      setTimeout(() => {
+        this.isIncorrectAnswer = false;
+      }, 1000);
     }
     this.answers.push({
       attempt,

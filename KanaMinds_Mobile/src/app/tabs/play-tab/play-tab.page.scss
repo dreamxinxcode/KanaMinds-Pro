@@ -16,6 +16,23 @@
         font-size: 8rem;
     }
 
+    #current-kana.incorrect-answer {
+        color: #f45450;
+        animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+        0%, 100% {
+          transform: translateX(0);
+        }
+        10%, 30%, 50%, 70%, 90% {
+          transform: translateX(-5px);
+        }
+        20%, 40%, 60%, 80% {
+          transform: translateX(5px);
+        }
+    }
+
     #choices-area {
         display: flex;
         justify-content: space-around;
@@ -24,6 +41,9 @@
         bottom: 0;
         
         .choice-button {
+            display: flex;
+            justify-content: center;
+            width: 100%;
             padding-bottom: 1.4rem;
             font-size: 1.4rem;
 
