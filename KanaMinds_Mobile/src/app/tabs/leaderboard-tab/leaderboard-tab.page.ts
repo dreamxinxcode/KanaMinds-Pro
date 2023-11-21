@@ -18,7 +18,7 @@ export class LeaderboardTabPage implements OnInit {
         this.leaderboard = res;
       },
       error: (err) => {
-
+        console.error(err);
       }
     });
   }

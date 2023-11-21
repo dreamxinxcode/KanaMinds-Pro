@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.kanaminds;
 
 import com.getcapacitor.BridgeActivity;
 
