@@ -15,19 +15,19 @@
     <span>{{ gems.getGems() }}</span>
   </div>  
 
-  <div *ngIf="gameComplete" id="game-area">
+  <div *ngIf="gameComplete" id="game-area" class="fade-in">
     <div *ngIf="gameComplete" id="results">
       <h2 class="start2p">Game Overview</h2>
       <p>Percentage correct {{ percentCorrect + '%' }}</p>
       <p>{{ fractionCorrect }}</p>
       <h3>Remember</h3>
       <p *ngFor="let answer of incorrectAnswers">{{ answer.japanese }} = {{ answer.english }}</p>
-      <ion-button (click)="playAgain()" class="button-green start2p">Play Again</ion-button>
+      <ion-button (click)="playAgain()" class="button-green start2p fade-in">Play Again</ion-button>
     </div>
   </div>
 
-  <div *ngIf="!gameComplete" id="game-area">
-    <span id="current-kana" [ngClass]="{'incorrect-answer': isIncorrectAnswer, 'correct-answer': isCorrectAnswer}">
+  <div *ngIf="!gameComplete" id="game-area" class="fade-in">
+    <span id="current-kana" class="{'incorrect-answer': isIncorrectAnswer, 'correct-answer': isCorrectAnswer}">
       {{ kanaList[currentKanaIndex].japanese }}
     </span>
     <div id="choices-area">
