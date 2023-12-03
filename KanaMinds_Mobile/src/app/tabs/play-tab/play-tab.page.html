@@ -35,7 +35,12 @@
       {{ kanaList[currentKanaIndex].japanese }}
     </span>
     <div id="choices-area">
-      <ion-button *ngFor='let item of choiceItems' (click)="handleAnswer(item)" class="choice-button">
+      <ion-button 
+        *ngFor='let item of choiceItems' 
+        (click)="handleAnswer(item)" 
+        [disabled]="disableChoices"
+        class="choice-button"
+        >
         {{ item.english.toUpperCase() }}
       </ion-button>
     </div>
