@@ -49,12 +49,10 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            padding-bottom: 1.4rem;
+            height: 6rem;
             font-size: 1.4rem;
-
-            &hover {
-                cursor: pointer;
-            }
+            --background: #111821;
+            --background-hover: #111821;
         }
     }
 }
