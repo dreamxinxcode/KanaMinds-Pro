@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { GemsService } from 'src/app/services/gems/gems.service';
 import { OptionsModalComponent } from './options-modal/options-modal.component';
 import { ModalController } from '@ionic/angular';
+import { AudioService } from 'src/app/services/audio/audio.service';
 
 @Component({
   selector: 'app-game-tab',
@@ -20,30 +21,32 @@ export class PlayTabPage {
   isIncorrectAnswer: boolean = false;
   
   kanaList = [
-    { japanese: 'あ', english: 'A' },
-    { japanese: 'い', english: 'I' },
-    { japanese: 'う', english: 'U' },
-    { japanese: 'え', english: 'E' },
-    { japanese: 'お', english: 'O' },
+    { japanese: 'あ', english: 'a' },
+    { japanese: 'い', english: 'i' },
+    { japanese: 'う', english: 'u' },
+    { japanese: 'え', english: 'e' },
+    { japanese: 'お', english: 'o' },
   ];
   
   choiceItems = [
-    { japanese: 'あ', english: 'A' },
-    { japanese: 'い', english: 'I' },
-    { japanese: 'う', english: 'U' },
-    { japanese: 'え', english: 'E' },
-    { japanese: 'お', english: 'O' },
+    { japanese: 'あ', english: 'a' },
+    { japanese: 'い', english: 'i' },
+    { japanese: 'う', english: 'u' },
+    { japanese: 'え', english: 'e' },
+    { japanese: 'お', english: 'o' },
   ];  
 
   constructor(
     public gems: GemsService, 
     private modalCtrl: ModalController,
+    public audio: AudioService
   ) {}
 
-  handleAnswer(attempt: any) {
+  async handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
-  
+    
     if (isCorrect) {
+      await this.audio.playKana(attempt.english);
       this.isCorrectAnswer = true;
       this.answers.push({
         attempt,
@@ -52,9 +55,13 @@ export class PlayTabPage {
       });
       this.updateScore();
       this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
-  
     } else {
       this.isIncorrectAnswer = true;
+      this.answers.push({
+        attempt,
+        answer: this.kanaList[this.currentKanaIndex],
+        isCorrect
+      });
       this.incorrectAnswers.push(this.kanaList[this.currentKanaIndex]);
       setTimeout(() => {
         this.isIncorrectAnswer = false;
@@ -81,10 +88,12 @@ export class PlayTabPage {
   }
 
   updateScore() {
-    // Percentage score
     const correctObjectsCount = this.answers.filter(obj => obj.isCorrect).length;
     const totalObjects = this.answers.length;
+
+    // Percentage score
     this.percentCorrect = Math.round((correctObjectsCount / totalObjects) * 100);
+  
     // Fraction score
     this.fractionCorrect = `${correctObjectsCount}/${totalObjects}`;
   }
