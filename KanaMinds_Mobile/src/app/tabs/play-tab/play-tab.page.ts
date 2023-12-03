@@ -3,6 +3,7 @@ import { GemsService } from 'src/app/services/gems/gems.service';
 import { OptionsModalComponent } from './options-modal/options-modal.component';
 import { ModalController } from '@ionic/angular';
 import { AudioService } from 'src/app/services/audio/audio.service';
+import { HapticsService } from 'src/app/services/haptics/haptics.service';
 
 @Component({
   selector: 'app-game-tab',
@@ -39,7 +40,8 @@ export class PlayTabPage {
   constructor(
     public gems: GemsService, 
     private modalCtrl: ModalController,
-    public audio: AudioService
+    public audio: AudioService,
+    private haptics: HapticsService,
   ) {}
 
   async handleAnswer(attempt: any) {
@@ -54,9 +56,9 @@ export class PlayTabPage {
         isCorrect
       });
       this.updateScore();
-      this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
     } else {
       this.isIncorrectAnswer = true;
+      this.haptics.hapticsVibrate();
       this.answers.push({
         attempt,
         answer: this.kanaList[this.currentKanaIndex],
@@ -72,6 +74,7 @@ export class PlayTabPage {
       this.isCorrectAnswer = false;
       if (this.currentKanaIndex === this.kanaList.length - 1) {
         this.gameComplete = true;
+        this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
         return;
       }
       this.currentKanaIndex++;
