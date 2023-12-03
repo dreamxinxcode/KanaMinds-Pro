@@ -15,7 +15,7 @@
     <span>{{ gems.getGems() }}</span>
   </div>  
 
-  <div *ngIf="gameComplete" id="game-area">
+  <div *ngIf="gameComplete" id="game-area" class="fade-in">
     <div *ngIf="gameComplete" id="results">
       <h2 class="start2p">Game Overview</h2>
       <p>Percentage correct {{ percentCorrect + '%' }}</p>
