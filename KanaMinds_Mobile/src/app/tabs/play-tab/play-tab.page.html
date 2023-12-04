@@ -31,12 +31,21 @@
   </div>
 
   <div *ngIf="!gameComplete" id="game-area" class="fade-in">
-    <span id="current-kana" [ngClass]="{'incorrect-answer': isIncorrectAnswer, 'correct-answer': isCorrectAnswer}">
+    <span 
+      id="current-kana" 
+      [ngClass]="{'incorrect-answer': isIncorrectAnswer, 'correct-answer': isCorrectAnswer}"
+    >
       {{ kanaList[currentKanaIndex].japanese }}
     </span>
-    <div id="choices-area">
-      <ion-button *ngFor='let item of choiceItems' (click)="handleAnswer(item)" class="choice-button">
-        {{ item.english.toUpperCase() }}
+
+    <div *ngIf="showChoices" id="choices-area" class="fade-up">
+      <ion-button 
+        *ngFor='let item of choiceItems' 
+        (click)="handleAnswer(item)" 
+        [disabled]="disableChoices"
+        class="choice-button"
+        >
+          {{ item.english.toUpperCase() }}
       </ion-button>
     </div>
   </div>  
