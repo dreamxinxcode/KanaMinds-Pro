@@ -12,7 +12,7 @@
 <ion-content [fullscreen]="true">
   <div id="gems-area" class="start2p">
     <img id='gem-image' src="../../../assets/gem.png" alt="">
-    <span>{{ gems.getGems() }}</span>
+    <span [countUp]="gems.getGems()"></span>
   </div>  
 
   <div *ngIf="gameComplete" id="game-area" class="fade-in">
