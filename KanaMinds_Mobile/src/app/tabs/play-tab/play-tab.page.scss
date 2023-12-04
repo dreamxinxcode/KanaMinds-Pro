@@ -19,6 +19,7 @@
 
     #current-kana.correct-answer {
         color: #54b689;
+        animation: pulseOnce 1s ease-in-out;
     }
 
     #current-kana.incorrect-answer {
