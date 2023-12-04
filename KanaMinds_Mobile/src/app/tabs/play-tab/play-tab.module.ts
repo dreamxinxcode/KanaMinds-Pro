@@ -6,13 +6,15 @@ import { PlayTabPage } from './play-tab.page';
 
 import { PlayTabPageRoutingModule } from './play-tab-routing.module';
 import { OptionsModalComponent } from './options-modal/options-modal.component';
+import { CountUpModule } from 'ngx-countup';
 
 @NgModule({
   imports: [
     IonicModule,
     CommonModule,
     FormsModule,
-    PlayTabPageRoutingModule
+    PlayTabPageRoutingModule,
+    CountUpModule,
   ],
   declarations: [PlayTabPage, OptionsModalComponent]
 })
