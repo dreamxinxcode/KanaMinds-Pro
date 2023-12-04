@@ -14,6 +14,7 @@ export class PlayTabPage {
   currentKanaIndex: number = 0;
   answers: any[] = [];
   incorrectAnswers: any[] = [];
+  showChoices: boolean = true;
   disableChoices: boolean = false;
   gameComplete: boolean = false;
   percentCorrect: number = 0;
@@ -48,6 +49,7 @@ export class PlayTabPage {
   async handleAnswer(attempt: any) {
     const isCorrect = attempt.english === this.kanaList[this.currentKanaIndex].english;
     this.disableChoices = true;
+    this.showChoices = false;
 
     if (isCorrect) {
       await this.audio.playKana(attempt.english);
@@ -75,6 +77,8 @@ export class PlayTabPage {
     setTimeout(() => {
       this.isCorrectAnswer = false;
       this.disableChoices = false;
+      this.showChoices = true;
+
       if (this.currentKanaIndex === this.kanaList.length - 1) {
         this.gameComplete = true;
         this.gems.giveGems(this.answers.filter(obj => obj.isCorrect).length);
