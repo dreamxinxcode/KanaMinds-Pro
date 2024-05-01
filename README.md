@@ -1,6 +1,6 @@
 # KanaMinds Pro
 
-![KanaMinds](./KanaMinds_Mobile/docs/screenshot.png)
+![KanaMinds](./docs/screenshot.png)
 
 ## Overview
 
