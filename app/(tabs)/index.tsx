@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, Alert, Vibration } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, Vibration } from 'react-native';
 import { Audio } from 'expo-av';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Text, View } from '@/components/Themed';
 
 interface IKanaPair {
   japanese: string;
