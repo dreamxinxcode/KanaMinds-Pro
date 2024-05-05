@@ -66,7 +66,7 @@ export default function TabLayout() {
           title: '',
           tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color={color} />,
           headerLeft: () => (
-            <Text style={{ marginLeft: 15, fontSize: 20 }}>Leaderboard</Text>
+            <Text style={{ marginLeft: 15, fontSize: 20, color: '#fff' }}>Leaderboard</Text>
           ),
         }}
       />
