@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, Text, View, Alert, Vibration } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, Vibration } from 'react-native';
 import { Audio } from 'expo-av';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { Text, View } from '@/components/Themed';
 
 interface IKanaPair {
   japanese: string;
@@ -85,7 +86,7 @@ export default function TabOneScreen() {
           <View style={styles.choices}>
             {choiceItems.map((choice, index) => (
               <TouchableOpacity key={index} onPress={() => handleChoicePress(choice)} style={styles.choiceItem}>
-                <Text style={styles.choiceText}>{choice.japanese}</Text>
+                <Text style={styles.choiceText}>{choice.english.toUpperCase()}</Text>
               </TouchableOpacity>
             ))}
           </View>  
