@@ -86,7 +86,7 @@ export default function TabOneScreen() {
           <View style={styles.choices}>
             {choiceItems.map((choice, index) => (
               <TouchableOpacity key={index} onPress={() => handleChoicePress(choice)} style={styles.choiceItem}>
-                <Text style={styles.choiceText}>{choice.japanese}</Text>
+                <Text style={styles.choiceText}>{choice.english.toUpperCase()}</Text>
               </TouchableOpacity>
             ))}
           </View>  

@@ -61,10 +61,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="leaderboard"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: '',
+          tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color={color} />,
+          headerLeft: () => (
+            <Text style={{ marginLeft: 15, fontSize: 20, color: '#fff' }}>Leaderboard</Text>
+          ),
         }}
       />
     </Tabs>
