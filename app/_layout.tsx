@@ -22,7 +22,10 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
+    NotoSansJP: require('../assets/fonts/NotoSansJP.ttf'),
+    Orbitron: require('../assets/fonts/Orbitron.ttf'),
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    PressStart2P: require('../assets/fonts/PressStart2P.ttf'),
     ...FontAwesome.font,
   });
 
