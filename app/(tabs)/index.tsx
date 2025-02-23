@@ -7,14 +7,15 @@ import { Text, View } from '@/components/Themed';
 interface IKanaPair {
   japanese: string;
   english: string;
-}
+  audio: any;
+};
 
 const kanaList: IKanaPair[] = [
-  { japanese: 'あ', english: 'a' },
-  { japanese: 'い', english: 'i' },
-  { japanese: 'う', english: 'u' },
-  { japanese: 'え', english: 'e' },
-  { japanese: 'お', english: 'o' },
+  { japanese: 'あ', english: 'a', audio: require('../../assets/sounds/hiragana_basic/あ.wav') },
+  { japanese: 'い', english: 'i', audio: require('../../assets/sounds/hiragana_basic/い.wav') },
+  { japanese: 'う', english: 'u', audio: require('../../assets/sounds/hiragana_basic/う.wav') },
+  { japanese: 'え', english: 'e', audio: require('../../assets/sounds/hiragana_basic/え.wav') },
+  { japanese: 'お', english: 'o', audio: require('../../assets/sounds/hiragana_basic/お.wav') },
 ];
 
 const shuffleChoices = (choices: IKanaPair[]) => {
@@ -22,7 +23,7 @@ const shuffleChoices = (choices: IKanaPair[]) => {
     const j = Math.floor(Math.random() * (i + 1));
     [choices[i], choices[j]] = [choices[j], choices[i]];
   }
-  return [...choices]; // Ensure a new array is returned to trigger re-render
+  return [...choices]; // Return a new array to trigger re-render
 };
 
 const AudioPlayer = () => {
@@ -30,16 +31,14 @@ const AudioPlayer = () => {
 
   useEffect(() => {
     return () => {
-      // Clean up the sound object
       if (sound) {
         sound.unloadAsync();
       }
     };
   }, [sound]);
 
-  const playSound = async (soundFileName: string) => {
-    const path = `../../assets/sounds/a.wav`;
-    const { sound: newSound } = await Audio.Sound.createAsync(require(path));
+  const playSound = async (audioSource: any) => {
+    const { sound: newSound } = await Audio.Sound.createAsync(audioSource);
     setSound(newSound);
     await newSound.playAsync();
   };
@@ -63,7 +62,7 @@ export default function TabOneScreen() {
     setAnswers(prevAnswers => [...prevAnswers, { ...choice, isCorrect }]);
 
     if (isCorrect) {
-      playSound(choice.english);
+      playSound(choice.audio);
     } else {
       Vibration.vibrate();
     }
@@ -91,7 +90,7 @@ export default function TabOneScreen() {
             ))}
           </View>  
         </>
-      ): (
+      ) : (
         <Text>Game Complete!</Text>
       )}
     </View>
