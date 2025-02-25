@@ -1,8 +1,9 @@
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, useColorScheme } from 'react-native';
 
 import CountryFlag from "react-native-country-flag";
 import { Text, View } from '@/components/Themed';
 import { useEffect, useState } from 'react';
+import { useTheme } from '@react-navigation/native';
 
 // TODO:
 // - Pull real users from API
@@ -40,6 +41,7 @@ const dummyUsers: IUser[] = [
 
 export default function TabTwoScreen() {
   const [users, setUsers] = useState<IUser[]>();
+  const { colors } = useTheme();
 
   const fetchLeaderboard = () => {
 
@@ -51,14 +53,14 @@ export default function TabTwoScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.card }]}>
         {users?.map((user) => (
-          <View style={styles.leaderboardItem} key={user.id}>
-            <View style={{ flexDirection: 'row' }}>
+          <View style={[styles.leaderboardItem, { backgroundColor: colors.card }]} key={user.id}>
+            <View style={{ flexDirection: 'row', backgroundColor: colors.card }}>
               <CountryFlag isoCode={user.country} size={15} />
-              <Text style={{ marginLeft: 10 }}>{user.username}</Text>
+              <Text style={{ marginLeft: 10, color: '#FFFFFF' }}>{user.username}</Text>
             </View>
-            <Text>{user.score}</Text>
+            <Text style={{ color: '#FFFFFF' }}>{user.score}</Text>
           </View>
         ))}
       </View>
@@ -80,6 +82,5 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '100%',
     marginBottom: 5,
-    elevation: 3,
   }
 });

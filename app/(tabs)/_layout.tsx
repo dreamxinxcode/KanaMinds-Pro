@@ -25,12 +25,6 @@ export default function TabLayout() {
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
-        headerStyle: {
-          backgroundColor: '#111821'
-        },
-        tabBarStyle: {
-          backgroundColor: '#111821'
-        }
       }}>
       <Tabs.Screen
         name="index"
@@ -47,7 +41,7 @@ export default function TabLayout() {
                   <FontAwesome
                     name="info-circle"
                     size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
+                    color={'#FFFFFF'}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
                   />
                 )}
