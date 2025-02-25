@@ -62,6 +62,7 @@ const AudioPlayer = () => {
 export default function TabOneScreen() {
   const [currentKanaIndex, setCurrentKanaIndex] = useState(0);
   const [answers, setAnswers] = useState<IKanaPair[]>([]);
+  const [disableChoices, setDisableChoices] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
   const [choiceItems, setChoiceItems] = useState<IKanaPair[]>(() => shuffleChoices([...kanaList]));
   const [incorrect, setIncorrect] = useState<IKanaPair[]>([]);
@@ -76,7 +77,10 @@ export default function TabOneScreen() {
   }, [currentKanaIndex]);
 
   const handleChoicePress = (choice: IKanaPair) => {
+    setDisableChoices(true);
+
     const isCorrect = choice.english === kanaList[currentKanaIndex].english;
+    
     setAnswers(prev => [...prev, { ...choice, isCorrect }]);
 
     if (isCorrect) {
@@ -112,6 +116,7 @@ export default function TabOneScreen() {
         }
       });
     }
+    setDisableChoices(false);
   };
 
   const playAgain = () => {
@@ -123,7 +128,7 @@ export default function TabOneScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {!gameComplete ? (
+      {!gameComplete && currentKanaIndex !== kanaList.length ? (
         <>
           <Animated.Text 
             style={[
@@ -172,7 +177,8 @@ export default function TabOneScreen() {
             )}
           </View>
           <Pressable 
-            onPress={playAgain} 
+            onPress={playAgain}
+            disabled={disableChoices}
             style={{ backgroundColor: Colors.green, padding: 4, borderRadius: 2, alignItems: 'center' }}
           >
             <Text style={{ fontFamily: 'Orbitron', color: '#FFFFFF' }}>Play Again</Text>
