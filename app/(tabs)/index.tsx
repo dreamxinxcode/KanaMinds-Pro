@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, Alert, Vibration } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  StyleSheet, 
+  TouchableOpacity, 
+  Vibration, 
+  Pressable, 
+  Animated 
+} from 'react-native';
 import { Audio } from 'expo-av';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { Text, View } from '@/components/Themed';
+import { useTheme } from '@react-navigation/native';
+import Colors from '@/constants/Colors';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface IKanaPair {
   japanese: string;
   english: string;
   audio: any;
-};
+}
 
 const kanaList: IKanaPair[] = [
   { japanese: 'あ', english: 'a', audio: require('../../assets/sounds/hiragana_basic/あ.wav') },
@@ -38,9 +47,13 @@ const AudioPlayer = () => {
   }, [sound]);
 
   const playSound = async (audioSource: any) => {
-    const { sound: newSound } = await Audio.Sound.createAsync(audioSource);
-    setSound(newSound);
-    await newSound.playAsync();
+    try {
+      const { sound: newSound } = await Audio.Sound.createAsync(audioSource);
+      setSound(newSound);
+      await newSound.playAsync();
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
   };
 
   return { playSound };
@@ -48,10 +61,15 @@ const AudioPlayer = () => {
 
 export default function TabOneScreen() {
   const [currentKanaIndex, setCurrentKanaIndex] = useState(0);
-  const [_, setAnswers] = useState<IKanaPair[]>([]);
+  const [answers, setAnswers] = useState<IKanaPair[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [choiceItems, setChoiceItems] = useState<IKanaPair[]>(() => shuffleChoices([...kanaList]));
+  const [incorrect, setIncorrect] = useState<IKanaPair[]>([]);
   const { playSound } = AudioPlayer();
+  const { colors } = useTheme();
+
+  // Animated value to drive the text color (white -> red -> white)
+  const colorAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     setChoiceItems(shuffleChoices([...kanaList]));
@@ -59,55 +77,123 @@ export default function TabOneScreen() {
 
   const handleChoicePress = (choice: IKanaPair) => {
     const isCorrect = choice.english === kanaList[currentKanaIndex].english;
-    setAnswers(prevAnswers => [...prevAnswers, { ...choice, isCorrect }]);
+    setAnswers(prev => [...prev, { ...choice, isCorrect }]);
 
     if (isCorrect) {
       playSound(choice.audio);
+      setTimeout(() => {
+        if (currentKanaIndex === kanaList.length - 1) {
+          setGameComplete(true);
+        } else {
+          setCurrentKanaIndex(prev => prev + 1);
+        }
+      }, 500);
     } else {
       Vibration.vibrate();
-    }
+      setIncorrect(prev => [...prev, choice]);
 
-    setTimeout(() => {
-      if (currentKanaIndex === kanaList.length - 1) {
-        setGameComplete(true);
-        Alert.alert('Game Complete', 'You have finished the game!', [{ text: 'OK' }]);
-      } else {
-        setCurrentKanaIndex(prevIndex => prevIndex + 1);
-      }
-    }, 500);
+      // Animate the text color: white -> red -> white
+      Animated.sequence([
+        Animated.timing(colorAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: false,
+        }),
+        Animated.timing(colorAnim, {
+          toValue: 0,
+          duration: 150,
+          useNativeDriver: false,
+        }),
+      ]).start(() => {
+        if (currentKanaIndex === kanaList.length - 1) {
+          setGameComplete(true);
+        } else {
+          setCurrentKanaIndex(prev => prev + 1);
+        }
+      });
+    }
+  };
+
+  const playAgain = () => {
+    setGameComplete(false);
+    setCurrentKanaIndex(0);
+    setAnswers([]);
+    setIncorrect([]);
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {!gameComplete ? (
         <>
-          <Text style={styles.currentKana}>{kanaList[currentKanaIndex].japanese}</Text>
-          <View style={styles.choices}>
+          <Animated.Text 
+            style={[
+              styles.currentKana, 
+              { color: colorAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['#ffffff', '#f23545']
+                })
+              }
+            ]}
+          >
+            {kanaList[currentKanaIndex].japanese}
+          </Animated.Text>
+          <View style={[styles.choices, { backgroundColor: colors.card }]}>
             {choiceItems.map((choice, index) => (
-              <TouchableOpacity key={index} onPress={() => handleChoicePress(choice)} style={styles.choiceItem}>
-                <Text style={styles.choiceText}>{choice.english.toUpperCase()}</Text>
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleChoicePress(choice)}
+                style={styles.choiceItem}
+              >
+                <Text style={styles.choiceText}>
+                  {choice.english.toUpperCase()}
+                </Text>
               </TouchableOpacity>
             ))}
-          </View>  
+          </View>
         </>
       ) : (
-        <Text>Game Complete!</Text>
+        <View style={{ backgroundColor: colors.card }}>
+          {/* Overview Section */}
+          <View style={[styles.incorrectContainer, { backgroundColor: colors.card }]}>
+            <Text style={styles.overviewTitle}>Overview</Text>
+            {incorrect.length ? (
+              incorrect.map((item, index) => (
+                <View style={[styles.incorrectItem, { backgroundColor: colors.card }]} key={index}>
+                  <Text style={styles.incorrectText}>
+                    {item.japanese} = {item.english}
+                  </Text>
+                  <Pressable onPress={() => playSound(item.audio)}>
+                    <FontAwesome name="volume-up" size={32} color="#fff" />
+                  </Pressable>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.noIncorrectText}>No incorrect answers</Text>
+            )}
+          </View>
+          <Pressable 
+            onPress={playAgain} 
+            style={{ backgroundColor: Colors.green, padding: 4, borderRadius: 2, alignItems: 'center' }}
+          >
+            <Text style={{ fontFamily: 'Orbitron', color: '#FFFFFF' }}>Play Again</Text>
+          </Pressable>
+        </View>
       )}
     </View>
-  );
+  );  
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   currentKana: {
     fontFamily: 'NotoSansJP',
     fontSize: RFValue(200),
     fontWeight: 'bold',
-    marginBottom: 20
+    marginBottom: 20,
   },
   choices: {
     flexDirection: 'row',
@@ -115,7 +201,7 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: 0,
-    padding: 10
+    padding: 10,
   },
   choiceItem: {
     padding: 10,
@@ -125,6 +211,39 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoSansJP',
     fontSize: 20,
     fontWeight: '600',
-    alignSelf: 'center'
-  }
+    color: '#FFFFFF',
+    alignSelf: 'center',
+  },
+  incorrectContainer: {
+    padding: 20,
+    borderRadius: 8,
+    marginVertical: 20,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  overviewTitle: {
+    fontFamily: 'PressStart2P',
+    color: '#FFFFFF',
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  incorrectItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+    paddingVertical: 5,
+  },
+  incorrectText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'PressStart2P',
+  },
+  noIncorrectText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 10,
+  },
 });
