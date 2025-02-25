@@ -90,7 +90,9 @@ export default function TabOneScreen() {
       }, 500);
     } else {
       Vibration.vibrate();
-      setIncorrect(prev => [...prev, choice]);
+
+      // Push current kana to incorrect list
+      setIncorrect(prev => [...prev, kanaList[currentKanaIndex]]);
 
       // Animate the text color: white -> red -> white
       Animated.sequence([
