@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  StyleSheet, 
-  TouchableOpacity, 
-  Vibration, 
-  Pressable, 
-  Animated 
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  FlatList,
+  ScrollView,
+  Vibration,
+  Pressable,
+  Animated
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { Text, View } from '@/components/Themed';
+import { Text as ThemedText, View } from '@/components/Themed';
 import { useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IKanaPair } from '@/types/IKanaPair';
 
-interface IKanaPair {
-  japanese: string;
-  english: string;
-  audio: any;
-}
-
-const kanaList: IKanaPair[] = [
+// Default master list (fallback)
+const defaultKanaList: IKanaPair[] = [
   { japanese: 'あ', english: 'a', audio: require('../../assets/sounds/hiragana_basic/あ.wav') },
   { japanese: 'い', english: 'i', audio: require('../../assets/sounds/hiragana_basic/い.wav') },
   { japanese: 'う', english: 'u', audio: require('../../assets/sounds/hiragana_basic/う.wav') },
@@ -27,12 +27,12 @@ const kanaList: IKanaPair[] = [
   { japanese: 'お', english: 'o', audio: require('../../assets/sounds/hiragana_basic/お.wav') },
 ];
 
-const shuffleChoices = (choices: IKanaPair[]) => {
-  for (let i = choices.length - 1; i > 0; i--) {
+const shuffleArray = <T,>(array: T[]): T[] => {
+  for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [choices[i], choices[j]] = [choices[j], choices[i]];
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  return [...choices]; // Return a new array to trigger re-render
+  return [...array];
 };
 
 const AudioPlayer = () => {
@@ -59,34 +59,90 @@ const AudioPlayer = () => {
   return { playSound };
 };
 
+/**
+ * Generates an array of 5 answer choices.
+ * It picks 4 random choices (excluding the correct answer) from the source list,
+ * adds the correct answer, and then shuffles the result.
+ */
+const generateChoiceItems = (correct: IKanaPair, source: IKanaPair[]): IKanaPair[] => {
+  // Filter out the correct answer
+  const filtered = source.filter(item => item.japanese !== correct.japanese);
+  const choices: IKanaPair[] = [];
+  const copy = [...filtered];
+
+  // Get 4 random items from the filtered array
+  for (let i = 0; i < 4; i++) {
+    if (copy.length === 0) break;
+    const randomIndex = Math.floor(Math.random() * copy.length);
+    choices.push(copy[randomIndex]);
+    copy.splice(randomIndex, 1); // remove to avoid duplicates
+  }
+  // Add the correct answer
+  choices.push(correct);
+  return shuffleArray(choices);
+};
+
 export default function TabOneScreen() {
+  const { colors } = useTheme();
   const [currentKanaIndex, setCurrentKanaIndex] = useState(0);
   const [answers, setAnswers] = useState<IKanaPair[]>([]);
   const [disableChoices, setDisableChoices] = useState(false);
   const [gameComplete, setGameComplete] = useState(false);
-  const [choiceItems, setChoiceItems] = useState<IKanaPair[]>(() => shuffleChoices([...kanaList]));
+  // The game list of 20 items (populated from stored kana)
+  const [gameKanaList, setGameKanaList] = useState<IKanaPair[]>([]);
+  // The choices for the current question (5 items)
+  const [choiceItems, setChoiceItems] = useState<IKanaPair[]>([]);
   const [incorrect, setIncorrect] = useState<IKanaPair[]>([]);
   const { playSound } = AudioPlayer();
-  const { colors } = useTheme();
-
-  // Animated value to drive the text color (white -> red -> white)
   const colorAnim = useRef(new Animated.Value(0)).current;
 
+  // Load stored kana from AsyncStorage and generate a 20-item game list.
   useEffect(() => {
-    setChoiceItems(shuffleChoices([...kanaList]));
-  }, [currentKanaIndex]);
+    const loadAndGenerateGameList = async () => {
+      try {
+        const storedKanaString = await AsyncStorage.getItem('selectedKana');
+        let storedKana: IKanaPair[] = [];
+        if (storedKanaString !== null) {
+          storedKana = JSON.parse(storedKanaString);
+        }
+        // Use stored kana if available, otherwise fall back to defaultKanaList.
+        const sourceList = storedKana.length > 0 ? storedKana : defaultKanaList;
+        const newGameList: IKanaPair[] = [];
+        for (let i = 0; i < 20; i++) {
+          const randomIndex = Math.floor(Math.random() * sourceList.length);
+          newGameList.push(sourceList[randomIndex]);
+        }
+        setGameKanaList(newGameList);
+        setCurrentKanaIndex(0);
+        setGameComplete(false);
+        setAnswers([]);
+        setIncorrect([]);
+      } catch (error) {
+        console.error('Error loading stored kana and generating game list:', error);
+      }
+    };
+    loadAndGenerateGameList();
+  }, []);
+
+  // Whenever the current question or game list changes, generate a new set of 5 choices.
+  useEffect(() => {
+    if (gameKanaList.length > 0 && currentKanaIndex < gameKanaList.length) {
+      const correct = gameKanaList[currentKanaIndex];
+      const newChoices = generateChoiceItems(correct, gameKanaList);
+      setChoiceItems(newChoices);
+    }
+  }, [currentKanaIndex, gameKanaList]);
 
   const handleChoicePress = (choice: IKanaPair) => {
     setDisableChoices(true);
 
-    const isCorrect = choice.english === kanaList[currentKanaIndex].english;
-    
+    const isCorrect = choice.english === gameKanaList[currentKanaIndex].english;
     setAnswers(prev => [...prev, { ...choice, isCorrect }]);
 
     if (isCorrect) {
       playSound(choice.audio);
       setTimeout(() => {
-        if (currentKanaIndex === kanaList.length - 1) {
+        if (currentKanaIndex === gameKanaList.length - 1) {
           setGameComplete(true);
         } else {
           setCurrentKanaIndex(prev => prev + 1);
@@ -94,11 +150,7 @@ export default function TabOneScreen() {
       }, 500);
     } else {
       Vibration.vibrate();
-
-      // Push current kana to incorrect list
-      setIncorrect(prev => [...prev, kanaList[currentKanaIndex]]);
-
-      // Animate the text color: white -> red -> white
+      setIncorrect(prev => [...prev, gameKanaList[currentKanaIndex]]);
       Animated.sequence([
         Animated.timing(colorAnim, {
           toValue: 1,
@@ -111,7 +163,7 @@ export default function TabOneScreen() {
           useNativeDriver: false,
         }),
       ]).start(() => {
-        if (currentKanaIndex === kanaList.length - 1) {
+        if (currentKanaIndex === gameKanaList.length - 1) {
           setGameComplete(true);
         } else {
           setCurrentKanaIndex(prev => prev + 1);
@@ -122,27 +174,48 @@ export default function TabOneScreen() {
   };
 
   const playAgain = () => {
-    setGameComplete(false);
-    setCurrentKanaIndex(0);
-    setAnswers([]);
-    setIncorrect([]);
+    // Regenerate game list from stored kana when playing again.
+    const regenerateGameList = async () => {
+      try {
+        const storedKanaString = await AsyncStorage.getItem('selectedKana');
+        let storedKana: IKanaPair[] = [];
+        if (storedKanaString !== null) {
+          storedKana = JSON.parse(storedKanaString);
+        }
+        const sourceList = storedKana.length > 0 ? storedKana : defaultKanaList;
+        const newGameList: IKanaPair[] = [];
+        for (let i = 0; i < 20; i++) {
+          const randomIndex = Math.floor(Math.random() * sourceList.length);
+          newGameList.push(sourceList[randomIndex]);
+        }
+        setGameKanaList(newGameList);
+        setCurrentKanaIndex(0);
+        setGameComplete(false);
+        setAnswers([]);
+        setIncorrect([]);
+      } catch (error) {
+        console.error('Error regenerating game list:', error);
+      }
+    };
+    regenerateGameList();
   };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      {!gameComplete && currentKanaIndex !== kanaList.length ? (
+      {!gameComplete && currentKanaIndex < gameKanaList.length ? (
         <>
-          <Animated.Text 
+          <Animated.Text
             style={[
-              styles.currentKana, 
-              { color: colorAnim.interpolate({
+              styles.currentKana,
+              {
+                color: colorAnim.interpolate({
                   inputRange: [0, 1],
                   outputRange: ['#ffffff', '#f23545']
                 })
               }
             ]}
           >
-            {kanaList[currentKanaIndex].japanese}
+            {gameKanaList[currentKanaIndex]?.japanese}
           </Animated.Text>
           <View style={[styles.choices, { backgroundColor: colors.card }]}>
             {choiceItems.map((choice, index) => (
@@ -150,6 +223,7 @@ export default function TabOneScreen() {
                 key={index}
                 onPress={() => handleChoicePress(choice)}
                 style={styles.choiceItem}
+                disabled={disableChoices}
               >
                 <Text style={styles.choiceText}>
                   {choice.english.toUpperCase()}
@@ -164,31 +238,41 @@ export default function TabOneScreen() {
           <View style={[styles.incorrectContainer, { backgroundColor: colors.card }]}>
             <Text style={styles.overviewTitle}>Overview</Text>
             {incorrect.length ? (
-              incorrect.map((item, index) => (
-                <View style={[styles.incorrectItem, { backgroundColor: colors.card }]} key={index}>
-                  <Text style={styles.incorrectText}>
-                    {item.japanese} = {item.english}
-                  </Text>
-                  <Pressable onPress={() => playSound(item.audio)}>
-                    <FontAwesome name="volume-up" size={32} color="#fff" />
-                  </Pressable>
-                </View>
-              ))
+              <ScrollView>
+                {incorrect.map((item, index) => (
+                  <View
+                    style={[styles.incorrectItem, { backgroundColor: colors.card }]}
+                    key={index}
+                  >
+                    <Text style={styles.incorrectText}>
+                      {item.japanese} = {item.english}
+                    </Text>
+                    <Pressable onPress={() => playSound(item.audio)}>
+                      <FontAwesome name="volume-up" size={32} color="#fff" />
+                    </Pressable>
+                  </View>
+                ))}
+              </ScrollView>
             ) : (
               <Text style={styles.noIncorrectText}>No incorrect answers</Text>
             )}
           </View>
-          <Pressable 
+          <Pressable
             onPress={playAgain}
             disabled={disableChoices}
-            style={{ backgroundColor: Colors.green, padding: 4, borderRadius: 2, alignItems: 'center' }}
+            style={{
+              backgroundColor: Colors.green,
+              padding: 4,
+              borderRadius: 2,
+              alignItems: 'center',
+            }}
           >
             <Text style={{ fontFamily: 'Orbitron', color: '#FFFFFF' }}>Play Again</Text>
           </Pressable>
         </View>
       )}
     </View>
-  );  
+  );
 }
 
 const styles = StyleSheet.create({
@@ -216,7 +300,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   choiceText: {
-    fontFamily: 'NotoSansJP',
+    fontFamily: 'Orbitron',
     fontSize: 20,
     fontWeight: '600',
     color: '#FFFFFF',

@@ -30,7 +30,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "",
-          tabBarIcon: ({ color }) => <TabBarIcon name="rocket" color={color} />,
+          tabBarIcon: ({ color, focused }) => <TabBarIcon name="rocket" color={focused ? Colors.green : color}/>,
           headerLeft: () => (
             <Text style={{ marginLeft: 15, fontSize: 20, color: '#fff' }}>KanaMinds<Text style={{color: Colors.green}}>Pro</Text></Text>
           ),
@@ -39,7 +39,7 @@ export default function TabLayout() {
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome
-                    name="info-circle"
+                    name="sliders"
                     size={25}
                     color={'#FFFFFF'}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
