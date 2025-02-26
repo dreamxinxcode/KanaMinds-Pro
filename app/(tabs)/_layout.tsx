@@ -39,7 +39,7 @@ export default function TabLayout() {
               <Pressable>
                 {({ pressed }) => (
                   <FontAwesome
-                    name="info-circle"
+                    name="sliders"
                     size={25}
                     color={'#FFFFFF'}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
