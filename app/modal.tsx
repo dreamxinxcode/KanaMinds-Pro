@@ -1,23 +1,53 @@
 import { StyleSheet, TouchableOpacity, Text, FlatList, ScrollView } from 'react-native';
 import { View } from '@/components/Themed';
 import { useTheme } from '@react-navigation/native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hiraganaBeginner } from '@/constants/Kana';
 import Colors from '@/constants/Colors';
+import { IKanaPair } from '@/types/IKanaPair';
 
 const hiraganaGroups = [
   { title: 'Hiragana Beginner', data: hiraganaBeginner },
-  // Additional groups can be added here...
 ];
 
 export default function ModalScreen() {
   const { colors } = useTheme();
-  const [selectedKana, setSelectedKana] = useState<string[]>([]);
+  // Change state type to IKanaPair[]
+  const [selectedKana, setSelectedKana] = useState<IKanaPair[]>([]);
 
-  const toggleKanaSelection = (kana: string) => {
+  // Load persisted selected kana on mount
+  useEffect(() => {
+    const loadSelectedKana = async () => {
+      try {
+        const storedKana = await AsyncStorage.getItem('selectedKana');
+        if (storedKana !== null) {
+          setSelectedKana(JSON.parse(storedKana));
+        }
+      } catch (error) {
+        console.error('Error loading selected kana:', error);
+      }
+    };
+    loadSelectedKana();
+  }, []);
+
+  // Save selected kana whenever it changes
+  useEffect(() => {
+    const saveSelectedKana = async () => {
+      try {
+        await AsyncStorage.setItem('selectedKana', JSON.stringify(selectedKana));
+      } catch (error) {
+        console.error('Error saving selected kana:', error);
+      }
+    };
+    saveSelectedKana();
+  }, [selectedKana]);
+
+  // Toggle selection based on unique property, e.g., the 'japanese' character.
+  const toggleKanaSelection = (kana: IKanaPair) => {
     setSelectedKana(prevSelected =>
-      prevSelected.includes(kana)
-        ? prevSelected.filter(k => k !== kana)
+      prevSelected.some(k => k.japanese === kana.japanese)
+        ? prevSelected.filter(k => k.japanese !== kana.japanese)
         : [...prevSelected, kana]
     );
   };
@@ -29,7 +59,9 @@ export default function ModalScreen() {
           <Text style={styles.groupTitle}>{group.title}</Text>
           {group.data.map((subArray, subIndex) => (
             <View key={subIndex} style={[styles.subArrayContainer, { backgroundColor: colors.card }]}>
-              <Text style={{ color: '#FFFFFF', fontFamily: 'Orbitron', fontSize: 15 }}>Level {subIndex + 1}</Text>
+              <Text style={{ color: '#FFFFFF', fontFamily: 'Orbitron', fontSize: 15 }}>
+                Level {subIndex + 1}
+              </Text>
               <FlatList
                 data={subArray}
                 keyExtractor={(item, index) => `${item.japanese}-${index}`}
@@ -39,14 +71,18 @@ export default function ModalScreen() {
                   <TouchableOpacity
                     style={[
                       styles.kanaItem,
-                      selectedKana.includes(item.japanese) && styles.selectedKana,
+                      selectedKana.some(k => k.japanese === item.japanese) && styles.selectedKana,
                     ]}
-                    onPress={() => toggleKanaSelection(item.japanese)}
+                    onPress={() => toggleKanaSelection(item)}
                   >
-                    <Text style={[
-                      styles.kanaText,
-                      selectedKana.includes(item.japanese) && styles.selectedKanaText,
-                    ]}>{item.japanese}</Text>
+                    <Text
+                      style={[
+                        styles.kanaText,
+                        selectedKana.some(k => k.japanese === item.japanese) && styles.selectedKanaText,
+                      ]}
+                    >
+                      {item.japanese}
+                    </Text>
                   </TouchableOpacity>
                 )}
               />
@@ -88,7 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     fontFamily: 'NotoSansJP',
-    color: '#FFFFFF'
+    color: '#FFFFFF',
   },
   selectedKana: {
     backgroundColor: Colors.green,
