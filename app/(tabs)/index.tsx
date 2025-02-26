@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {
+import { 
   StyleSheet,
   TouchableOpacity,
   Text,
@@ -94,6 +94,9 @@ export default function TabOneScreen() {
   const [choiceItems, setChoiceItems] = useState<IKanaPair[]>([]);
   const [incorrect, setIncorrect] = useState<IKanaPair[]>([]);
   const { playSound } = AudioPlayer();
+
+  // Animated value for progress (0 to 1)
+  const progress = useRef(new Animated.Value(0)).current;
   const colorAnim = useRef(new Animated.Value(0)).current;
 
   // Load stored kana from AsyncStorage and generate a 20-item game list.
@@ -124,12 +127,19 @@ export default function TabOneScreen() {
     loadAndGenerateGameList();
   }, []);
 
-  // Whenever the current question or game list changes, generate a new set of 5 choices.
+  // Update the choices whenever the current question or game list changes.
   useEffect(() => {
     if (gameKanaList.length > 0 && currentKanaIndex < gameKanaList.length) {
       const correct = gameKanaList[currentKanaIndex];
       const newChoices = generateChoiceItems(correct, gameKanaList);
       setChoiceItems(newChoices);
+      // Animate the progress bar.
+      const progressValue = (currentKanaIndex + 1) / gameKanaList.length;
+      Animated.timing(progress, {
+        toValue: progressValue,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
     }
   }, [currentKanaIndex, gameKanaList]);
 
@@ -193,6 +203,12 @@ export default function TabOneScreen() {
         setGameComplete(false);
         setAnswers([]);
         setIncorrect([]);
+        // Reset progress bar
+        Animated.timing(progress, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
       } catch (error) {
         console.error('Error regenerating game list:', error);
       }
@@ -202,6 +218,23 @@ export default function TabOneScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {currentKanaIndex && !gameComplete ? (
+        <View style={styles.progressContainer}>
+          <Animated.View
+            style={[
+              styles.progressBar,
+              {
+                width: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ['0%', '100%']
+                }),
+                backgroundColor: Colors.green,
+              }
+            ]}
+          />
+        </View>
+      ) : null}
+
       {!gameComplete && currentKanaIndex < gameKanaList.length ? (
         <>
           <Animated.Text
@@ -278,8 +311,19 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: '#ccc',
+  },
+  progressBar: {
+    height: '100%',
   },
   currentKana: {
     fontFamily: 'NotoSansJP',
