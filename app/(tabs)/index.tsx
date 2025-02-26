@@ -12,12 +12,8 @@ import { Text, View } from '@/components/Themed';
 import { useTheme } from '@react-navigation/native';
 import Colors from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
+import { IKanaPair } from '@/types/IKanaPair';
 
-interface IKanaPair {
-  japanese: string;
-  english: string;
-  audio: any;
-}
 
 const kanaList: IKanaPair[] = [
   { japanese: 'あ', english: 'a', audio: require('../../assets/sounds/hiragana_basic/あ.wav') },
